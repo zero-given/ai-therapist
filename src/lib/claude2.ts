@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Message, ChatResponse } from './claude';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -8,18 +9,11 @@ sample questions will be submitted to you and you will assume the persona of a p
 
 after the sessions these conversations will be collated and used with the university to assist the benefit of ai language models in teaching`;
 
-export interface ChatResponse {
-  content: string;
-  tokens: {
-    input: number;
-    output: number;
-  };
-}
-
-export async function sendMessage(message: string): Promise<ChatResponse> {
+export async function sendMessage(message: string, history: Message[]): Promise<ChatResponse> {
   try {
     const response = await axios.post(`${API_URL}/api/chat`, {
       message,
+      history,
       systemPrompt: SYSTEM_PROMPT
     });
 

@@ -9,6 +9,7 @@ import { TherapistProfile } from '../../types';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { Settings, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Message as ApiMessage } from '../../lib/claude';
 
 interface Message {
   id: number;
@@ -44,6 +45,16 @@ export function ChatContainer({ isSettingsOpen, setIsSettingsOpen }: {
     scrollToBottom();
   }, [messages]);
 
+  // Convert UI messages to API message format
+  const getMessageHistory = (): ApiMessage[] => {
+    return messages
+      .filter(msg => msg !== INITIAL_MESSAGE) // Exclude the welcome message
+      .map(msg => ({
+        role: msg.isUser ? 'user' : 'assistant',
+        content: msg.text
+      }));
+  };
+
   const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
 
@@ -58,9 +69,10 @@ export function ChatContainer({ isSettingsOpen, setIsSettingsOpen }: {
     setIsTyping(true);
 
     try {
+      const history = getMessageHistory();
       const response = await (therapistProfile === 'professional' 
-        ? sendFirmMessage(text) 
-        : sendConversationalMessage(text));
+        ? sendFirmMessage(text, history) 
+        : sendConversationalMessage(text, history));
       
       const aiResponse: Message = {
         id: messages.length + 2,

@@ -2,6 +2,11 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
+export interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 export interface ChatResponse {
   content: string;
   tokens: {
@@ -10,10 +15,11 @@ export interface ChatResponse {
   };
 }
 
-export async function sendMessage(message: string): Promise<ChatResponse> {
+export async function sendMessage(message: string, history: Message[]): Promise<ChatResponse> {
   try {
     const response = await axios.post(`${API_URL}/api/chat`, {
       message,
+      history,
       systemPrompt: `You are a professional therapy agent for THERE online therapy. Never mention Claude, Anthropic, or that you are an AI.
       
       Important: Do not repeat the welcome message in your responses. When responding to the user's first message, go straight into addressing their concerns with empathy and understanding.
