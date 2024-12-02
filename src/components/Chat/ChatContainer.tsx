@@ -5,6 +5,10 @@ import { useStore } from '../../store/useStore';
 import { sendMessage as sendFirmMessage } from '../../lib/claude';
 import { sendMessage as sendConversationalMessage } from '../../lib/claude2';
 import ChatSettings from './ChatSettings';
+import { TherapistProfile } from '../../types';
+import { useIsMobile } from '../../hooks/useIsMobile';
+import { Settings, X } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface Message {
   id: number;
@@ -20,13 +24,17 @@ const INITIAL_MESSAGE = {
   timestamp: new Date().toLocaleTimeString(),
 };
 
-export function ChatContainer() {
+export function ChatContainer({ isSettingsOpen, setIsSettingsOpen }: { 
+  isSettingsOpen: boolean; 
+  setIsSettingsOpen: (isOpen: boolean) => void 
+}) {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
   const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const incrementTokens = useStore((state) => state.incrementTokens);
   const [isFirstMessage, setIsFirstMessage] = useState(true);
   const [therapistProfile, setTherapistProfile] = useState<'professional' | 'conversational'>('professional');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
+  const incrementTokens = useStore((state) => state.incrementTokens);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -82,35 +90,58 @@ export function ChatContainer() {
   };
 
   return (
-    <div className="h-full bg-gradient-to-br from-purple-600 to-pink-500 flex">
-      <div className="absolute left-4 top-4">
-        <ChatSettings 
-          profile={therapistProfile} 
-          onProfileChange={setTherapistProfile} 
-        />
-      </div>
-      <div className="flex-1 flex justify-center">
-        <div className="w-1/2 h-full flex flex-col p-4">
-          <div className="flex-1">
-            <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 h-full flex flex-col">
-              <div className="flex-1 space-y-4">
-                {messages.map((message) => (
-                  <ChatMessage
-                    key={message.id}
-                    message={message.text}
-                    isUser={message.isUser}
-                    timestamp={message.timestamp}
-                  />
-                ))}
-                {isTyping && (
-                  <div className="flex items-center space-x-2 text-gray-500">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
+    <div className="flex flex-col h-screen bg-gradient-to-br from-purple-600 to-blue-500">
+      {isSettingsOpen && (
+        <>
+          <div 
+            className="fixed inset-0 z-40"
+            onClick={() => setIsSettingsOpen(false)}
+          />
+          <div className="fixed top-16 right-4 w-[280px] bg-purple-600/30 backdrop-blur-md rounded-xl p-4 z-50 shadow-lg">
+            <div className="flex justify-end -mt-2 -mr-2">
+              <button
+                onClick={() => setIsSettingsOpen(false)}
+                className="p-1.5 rounded-full hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <ChatSettings 
+              profile={therapistProfile} 
+              onProfileChange={setTherapistProfile}
+              isOpen={isSettingsOpen}
+              onClose={() => setIsSettingsOpen(false)}
+            />
+          </div>
+        </>
+      )}
+      {/* Main container */}
+      <div className="max-w-3xl mx-auto px-4">
+        {/* Chat container */}
+        <div className="flex flex-col h-[calc(100vh-4rem)] pt-10">
+          {/* Messages container */}
+          <div className="flex-1 overflow-y-auto space-y-4 bg-white/30 backdrop-blur-sm rounded-lg p-4 mt-16 mb-20">
+            {messages.map((message) => (
+              <ChatMessage
+                key={message.id}
+                message={message.text}
+                isUser={message.isUser}
+                timestamp={message.timestamp}
+              />
+            ))}
+            {isTyping && (
+              <div className="flex items-center space-x-2 text-gray-500">
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }} />
               </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input container - fixed to bottom */}
+          <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-3xl px-4 pb-6">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
               <ChatInput onSendMessage={handleSendMessage} />
             </div>
           </div>

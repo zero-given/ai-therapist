@@ -9,8 +9,8 @@ interface ChatMessageProps {
 
 export function ChatMessage({ message, isUser, timestamp }: ChatMessageProps) {
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
-      <div className={`flex max-w-[80%] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+    <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
+      <div className={`flex w-[98%] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
         <div className={`flex-shrink-0 ${isUser ? 'ml-3' : 'mr-3'}`}>
           {isUser ? (
             <div className="bg-indigo-100 rounded-full p-2">
@@ -23,7 +23,7 @@ export function ChatMessage({ message, isUser, timestamp }: ChatMessageProps) {
           )}
         </div>
         <div
-          className={`rounded-lg px-4 py-2 ${
+          className={`rounded-lg px-6 py-3 w-full ${
             isUser
               ? 'bg-indigo-600 text-white'
               : 'bg-gray-100 text-gray-800'

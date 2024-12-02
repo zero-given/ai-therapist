@@ -34,24 +34,29 @@ export function ChatInput({ onSendMessage }: ChatInputProps) {
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value);
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="border-t border-gray-200 p-4 bg-white">
-      <div className="flex space-x-4">
+    <form onSubmit={handleSubmit} className="relative">
+      <div className="flex items-center space-x-2">
         <textarea
           ref={textareaRef}
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder="Type your message..."
+          className="flex-1 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-2 text-black dark:text-white placeholder-gray-500 resize-none focus:outline-none focus:border-white/40 min-h-[40px] max-h-[120px]"
           rows={1}
-          className="flex-1 resize-none overflow-hidden rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          style={{ height: '40px' }}
         />
         <button
           type="submit"
-          className="bg-indigo-600 text-white rounded-lg px-6 py-2 hover:bg-indigo-700 transition flex items-center space-x-2"
+          className="p-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition-colors"
+          disabled={!message.trim()}
         >
-          <span>Send</span>
-          <Send className="h-4 w-4" />
+          <Send className="w-5 h-5 text-white" />
         </button>
       </div>
     </form>

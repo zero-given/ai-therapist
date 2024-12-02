@@ -10,6 +10,7 @@ export type Page = 'landing' | 'chat' | 'about' | 'contact';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('landing');
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const renderPage = () => {
     switch (currentPage) {
@@ -22,7 +23,11 @@ function App() {
       case 'chat':
         return (
           <div className="h-screen flex flex-col">
-            <Header onNavigate={setCurrentPage} currentPage={currentPage} />
+            <Header 
+              onNavigate={setCurrentPage} 
+              currentPage={currentPage} 
+              setIsSettingsOpen={setIsSettingsOpen}
+            />
             <motion.main
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -30,7 +35,7 @@ function App() {
               className="flex-1 overflow-hidden"
             >
               <div className="h-full">
-                <ChatContainer />
+                <ChatContainer isSettingsOpen={isSettingsOpen} setIsSettingsOpen={setIsSettingsOpen} />
               </div>
             </motion.main>
           </div>
