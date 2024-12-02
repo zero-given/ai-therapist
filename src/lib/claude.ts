@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://ai-therapist-api.onrender.com/api/chat'  
+  : 'http://localhost:3001/api/chat';
 
 export interface ChatResponse {
   content: string;
@@ -12,7 +14,7 @@ export interface ChatResponse {
 
 export async function sendMessage(message: string): Promise<ChatResponse> {
   try {
-    const response = await axios.post(`${API_URL}/api/chat`, {
+    const response = await axios.post(`${API_URL}`, {
       message,
       systemPrompt: `You are a professional therapy agent for THERE online therapy. Never mention Claude, Anthropic, or that you are an AI.
       
