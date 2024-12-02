@@ -15,9 +15,7 @@ const anthropic = new Anthropic({
 
 // Configure CORS for development and production
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://there-ai.vercel.app', 'https://there-redesign.vercel.app'] 
-    : 'http://localhost:5173',
+  origin: '*',  // Allow all origins for now
   optionsSuccessStatus: 200
 };
 
