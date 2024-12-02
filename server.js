@@ -13,6 +13,11 @@ const client = new Anthropic({
   apiKey: process.env.VITE_CLAUDE_API_KEY
 });
 
+// Health check endpoint
+app.get('/api/chat', (req, res) => {
+  res.json({ status: 'ok', message: 'AI Therapist backend is running' });
+});
+
 app.post('/api/chat', async (req, res) => {
   try {
     const { message, systemPrompt } = req.body;
